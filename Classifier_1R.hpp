@@ -1,7 +1,6 @@
-#include <iostream>
-#include <vector>
+#ifndef CLASSIFIER_1R_H
+#define CLASSIFIER_1R_H
 
-using namespace std;
 
 // Klasyfikator-1R uczymy na przekazanej tabeli a potem wykorzystujemy do
 // poszczegolnych obiektow,
@@ -14,7 +13,13 @@ using namespace std;
 //Klasyfikator na podstawie przekazanych danych sporzadz odpowiednie drzewo decyzycjne
 //Ktore nastepnie wykorzystuje do klasyfikacji danych.
 
-int main(int argc, char const *argv[]) {
-  cout << "Hello!";
-  return 0;
-}
+template <class T, class N>
+class Classifier1R {
+  public:
+    Classifier1R();
+  private:
+    int fittest_col;
+
+};
+
+#endif CLASSIFIER_1R_H
