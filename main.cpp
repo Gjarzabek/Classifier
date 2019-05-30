@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include "Classifier_1R.hpp"
+#include "DataTable.hpp"
 
 using namespace std;
 
@@ -15,6 +17,10 @@ using namespace std;
 //Ktore nastepnie wykorzystuje do klasyfikacji danych.
 
 int main(int argc, char const *argv[]) {
-  cout << "Hello!";
+  cout << "Hello!\n";
+  DataTable a;
+  a.txt_load("data.txt");
+  a.txt_save("testfile.txt");
+  cout << a;
   return 0;
 }

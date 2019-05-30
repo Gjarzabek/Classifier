@@ -22,4 +22,4 @@ class Classifier1R {
 
 };
 
-#endif CLASSIFIER_1R_H
+#endif
