@@ -20,7 +20,6 @@ int main(int argc, char const *argv[]) {
   cout << "Hello!\n";
   DataTable a;
   a.txt_load("data.txt");
-  a.txt_save("testfile.txt");
   cout << a;
   return 0;
 }

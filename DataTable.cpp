@@ -11,6 +11,7 @@ void DataTable::txt_save(const std::string & filename) const {
     }
     file << '\n';
   }
+  file.close();
 }
 
 void DataTable::txt_load(const std::string & filename) {
@@ -48,4 +49,5 @@ void DataTable::txt_load(const std::string & filename) {
     }
     ch = file.get();
   }
+  file.close();
 }
