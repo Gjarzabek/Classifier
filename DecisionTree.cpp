@@ -18,7 +18,7 @@ std::string DecisionTree::TreeNode::get_name() const {
 }
 
 void DecisionTree::TreeNode::add_edge(const std::string & s, TreeNode * child) {
-  children.push_back(std::pair<std::string, TreeNode*>(s, child));
+  children.insert({s, children});
 }
 
 template <typename T>
@@ -26,10 +26,13 @@ auto DecisionTree::TreeNode::choose_edge(T choice_val) {
   if (node_type == CONDITION) {
     if (typeid(choice_val) != typeid(value))
       return nullptr;
-    
   }
   else {
     if (typeid(choice_val) != typeid(name))
       return nullptr;
   }
+  if (children.find(choice_val) == children.end())
+    return nullptr;
+  else
+    return children[choice_val];
 }

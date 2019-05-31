@@ -8,6 +8,7 @@
 */
 
 #include "DataTable.hpp"
+#include <unordered_map>
 
 class DecisionTree {
   public:
@@ -16,7 +17,7 @@ class DecisionTree {
     ~DecisionTree() {
       delete_tree();
     };
-    void construct(const DataTable & dt);
+    void build(const DataTable & dt);
     bool ask(std::vector<std::string> v) const;
 
   private:
@@ -36,17 +37,15 @@ class DecisionTree {
         int get_value() const;
         std::string get_name() const;
         void add_edge(const std::string & s, TreeNode * child);
-
         template <typename T>
         auto choose_edge(T choice_val);
-        // dodatkowo funkcja pozwalajaca wybrac odpowiednia galaz
-        // w drodze do liscia ?
+
       private:
         const int cat_id;
         const Type node_type;
         const std::string name;
         const int value;
-        std::vector<std::pair<std::string, TreeNode *>> children;
+        std::unordered_map<std::string, TreeNode*> children;
     };
     TreeNode * root;
 
