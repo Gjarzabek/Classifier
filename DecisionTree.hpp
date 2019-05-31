@@ -8,6 +8,7 @@
 */
 
 #include "DataTable.hpp"
+#include <list>
 #include <unordered_map>
 
 class DecisionTree {
@@ -21,6 +22,8 @@ class DecisionTree {
     bool ask(std::vector<std::string> v) const;
 
   private:
+
+
     class TreeNode {
       public:
         enum Type {
@@ -28,10 +31,10 @@ class DecisionTree {
           CATEGORY
         };
 
-        TreeNode() = 0;
-        TreeNode(TreeNode x) = 0;
-        TreeNode(int c_id, std::string nm) : cat_id(c_id), node_type(CATEGORY), name(nm) {}
-        TreeNode(int c_id, int w) : cat_id(c_id), node_type(CONDITION), value(w) {}
+        TreeNode() = delete;
+        TreeNode(const TreeNode & x) = delete;
+        TreeNode(int c_id, std::string nm) : cat_id(c_id), node_type(CATEGORY), name(nm), value(0) {}
+        TreeNode(int c_id, int w) : cat_id(c_id), node_type(CONDITION), name(""),value(w) {}
 
         const auto & get_children() const;
         int get_value() const;
@@ -48,8 +51,11 @@ class DecisionTree {
         std::unordered_map<std::string, TreeNode*> children;
     };
     TreeNode * root;
-
+    std::list<int> categories_ids;
+    // funkcja inicjalizuje @categories_ids indeksami kategorii
+    // "przyrost informacji" kolejnych kategorii maleje
+    void calculate_info_gain(const DataTable & dt);
     void delete_tree();
-}
+};
 
 #endif

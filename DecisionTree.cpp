@@ -1,4 +1,5 @@
-#include "DecisionTree.h"
+#include "DecisionTree.hpp"
+
 
 const auto & DecisionTree::TreeNode::get_children() const {
   return children;
@@ -18,7 +19,7 @@ std::string DecisionTree::TreeNode::get_name() const {
 }
 
 void DecisionTree::TreeNode::add_edge(const std::string & s, TreeNode * child) {
-  children.insert({s, children});
+  children.insert(std::make_pair(s, child));
 }
 
 template <typename T>
@@ -35,4 +36,9 @@ auto DecisionTree::TreeNode::choose_edge(T choice_val) {
     return nullptr;
   else
     return children[choice_val];
+}
+
+void DecisionTree::calculate_info_gain(const DataTable & dt) {
+  categories_ids.clear();
+
 }

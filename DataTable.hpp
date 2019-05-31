@@ -24,7 +24,7 @@ class DataTable {
     std::vector<std::vector<std::string>> * data;
 
 };
-
+/**
 std::ostream& operator<<(std::ostream& os, const DataTable & dt) {
   unsigned len = (dt.data)->end()->size();
   for (unsigned i = 0 ; i < len; ++i) {
@@ -43,6 +43,6 @@ std::ostream& operator<<(std::ostream& os, const DataTable & dt) {
   }
   os << '\n';
   return os;
-}
+}*/
 
 #endif
