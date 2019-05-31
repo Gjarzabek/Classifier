@@ -1,9 +1,6 @@
-#include <iostream>
-#include <vector>
-#include "Classifier.hpp"
-#include "DataTable.hpp"
+#ifndef CLASSIFIER_H
+#define CLASSIFIER_H
 
-using namespace std;
 
 // Klasyfikator-1R uczymy na przekazanej tabeli a potem wykorzystujemy do
 // poszczegolnych obiektow,
@@ -13,13 +10,15 @@ using namespace std;
 // z oczekiwanymi wynikami dla poszczegolnych obiektow w tabeli
 // kontener <obiekt, ocena>
 
-//Klasyfikator na podstawie przekazanych danych sporzadza odpowiednie drzewo decyzycjne
+//Klasyfikator na podstawie przekazanych danych sporzadz odpowiednie drzewo decyzycjne
 //Ktore nastepnie wykorzystuje do klasyfikacji danych.
 
-int main(int argc, char const *argv[]) {
-  cout << "Hello!\n";
-  DataTable a;
-  a.txt_load("data.txt");
-  cout << a;
-  return 0;
-}
+template <class T, class N>
+class Classifier {
+  public:
+    Classifier();
+  private:
+
+};
+
+#endif

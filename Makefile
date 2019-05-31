@@ -15,7 +15,7 @@ DataTable.o: DataTable.cpp DataTable.hpp
 		$(CC) $(CFLAGS) DataTable.cpp
 
 clean:
-	rm *.o output
+	rm *.o output *.gch
 
 #	CC = gcc
 #	CFLAGS = -Wall --pedantic -c
