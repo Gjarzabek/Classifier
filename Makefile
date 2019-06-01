@@ -1,9 +1,9 @@
 CC = g++
-CFLAGS = -Wall -fexceptions -c -std=c++14
-LDFLAGS = -Wall -fexceptions -std=c++14
+CFLAGS = -Wall -fexceptions -c -std=c++14 -pthread
+LDFLAGS = -Wall -fexceptions -std=c++14 -pthread
 
-output: DataTable.o Classifier.o DecisionTree.o main.o
-	$(CC) $(LDFLAGS) main.o DecisionTree.o Classifier.o DataTable.o -o output
+app: DataTable.o Classifier.o DecisionTree.o main.o
+	$(CC) $(LDFLAGS) main.o DecisionTree.o Classifier.o DataTable.o -o app
 
 main.o: main.cpp
 	$(CC) $(CFLAGS) main.cpp
@@ -18,7 +18,7 @@ DecisionTree.o: DecisionTree.cpp DecisionTree.hpp
 	$(CC) $(CFLAGS) DecisionTree.cpp
 
 clean:
-	rm *.o output *.gch
+	rm *.o app
 
 #	CC = gcc
 #	CFLAGS = -Wall --pedantic -c

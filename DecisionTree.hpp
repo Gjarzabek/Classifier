@@ -28,7 +28,7 @@ class DecisionTree {
   private:
 
 
-    friend class TreeNode {
+    class TreeNode {
       public:
         enum Type {
           CONDITION,
@@ -54,6 +54,7 @@ class DecisionTree {
         const int value;
         std::unordered_map<std::string, TreeNode*> children;
     };
+    friend TreeNode;
     TreeNode * root;
     // key - info_gain, value - category id in categories vector
     std::multimap<float, int> categories_ids;
@@ -61,8 +62,8 @@ class DecisionTree {
 
     void calculate_info_gain(const DataTable & dt);
     void delete_tree();
-    void column_calculation(double pn, int p, int q, const DataTable & dt); // static?
-    static double set_info(int x, int y);
+    void column_calculation(double seten, double pn, int p, int q, const DataTable & dt);
+    static double set_entropy(int x, int y);
     static bool is_positive(std::string s);
     static bool is_number(const std::string & s);
 
