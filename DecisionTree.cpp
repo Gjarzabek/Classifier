@@ -173,3 +173,15 @@ void DecisionTree::column_calculation(double set_ent, double n_pos_rows, int p, 
     ++p;
   }
 }
+
+//recursive creation
+void DecisionTree::walk(const DataTable & dt) {
+
+}
+
+// zmienic DataTable na linked liste
+// Funkcja calculate_info_gain musi byc wywolywana przy kazdej
+// budowie nowego wezla
+void DecisionTree::build(const DataTable & dt) {
+  calculate_info_gain(dt);
+}
