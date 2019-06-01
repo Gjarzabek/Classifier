@@ -2,14 +2,14 @@ CC = g++
 CFLAGS = -Wall -fexceptions -c -std=c++14
 LDFLAGS = -Wall -fexceptions -std=c++14
 
-output: DataTable.o Classifier_1R.o DecisionTree.o main.o
-	$(CC) $(LDFLAGS) main.o DecisionTree.o Classifier_1R.o DataTable.o -o output
+output: DataTable.o Classifier.o DecisionTree.o main.o
+	$(CC) $(LDFLAGS) main.o DecisionTree.o Classifier.o DataTable.o -o output
 
 main.o: main.cpp
 	$(CC) $(CFLAGS) main.cpp
 
-Classifier_1R.o: Classifier_1R.cpp Classifier_1R.hpp
-	$(CC) $(CFLAGS) Classifier_1R.cpp
+Classifier.o: Classifier.cpp Classifier.hpp
+	$(CC) $(CFLAGS) Classifier.cpp
 
 DataTable.o: DataTable.cpp DataTable.hpp
 	$(CC) $(CFLAGS) DataTable.cpp

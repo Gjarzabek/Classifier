@@ -1,4 +1,11 @@
 #include "DataTable.hpp"
+#include <assert.h>
+
+const std::vector<std::string> & DataTable::operator[] (unsigned index) const{
+  assert(data->size() > index);
+  return (*data)[index];
+}
+
 
 void DataTable::txt_save(const std::string & filename) const {
   std::fstream file;

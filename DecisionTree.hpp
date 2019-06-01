@@ -8,8 +8,12 @@
 */
 
 #include "DataTable.hpp"
-#include <list>
+#include <map>
+#include <mutex>
 #include <unordered_map>
+
+#define YES "yes"
+#define NO "no"
 
 class DecisionTree {
   public:
@@ -24,7 +28,7 @@ class DecisionTree {
   private:
 
 
-    class TreeNode {
+    friend class TreeNode {
       public:
         enum Type {
           CONDITION,
@@ -51,11 +55,18 @@ class DecisionTree {
         std::unordered_map<std::string, TreeNode*> children;
     };
     TreeNode * root;
-    std::list<int> categories_ids;
-    // funkcja inicjalizuje @categories_ids indeksami kategorii
-    // "przyrost informacji" kolejnych kategorii maleje
+    // key - info_gain, value - category id in categories vector
+    std::multimap<float, int> categories_ids;
+    std::mutex multimap_mut;
+
     void calculate_info_gain(const DataTable & dt);
     void delete_tree();
+    void column_calculation(double pn, int p, int q, const DataTable & dt); // static?
+    static double set_info(int x, int y);
+    static bool is_positive(std::string s);
+    static bool is_number(const std::string & s);
+
+
 };
 
 #endif

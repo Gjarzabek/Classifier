@@ -13,12 +13,15 @@ class DataTable {
     DataTable(): data(new std::vector<std::vector<std::string>>(0)) {}
     ~DataTable() {
       delete data;
-    };
+    }
     void txt_load(const std::string & filename);
     /* return true if saved succeded*/
     void txt_save(const std::string & table) const;
+    unsigned get_len() const {
+      return data->size();
+    }
     friend std::ostream& operator<<(std::ostream& os, const DataTable & dt);
-
+    const std::vector<std::string> & operator[] (unsigned) const;
 
   private:
     std::vector<std::vector<std::string>> * data;
