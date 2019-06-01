@@ -7,10 +7,20 @@
   and construct decisiontree associated with it.
 */
 
+/*
+  Todo:
+    *napisać funkcje budującą drzewo
+    *napisać funkcje nizszącą drzewo
+    *napisać Klase Classifier która uzywa DataTable i DecisionTre6e
+    *
+*/
+
+
 #include "DataTable.hpp"
 #include <map>
 #include <mutex>
 #include <unordered_map>
+#include <utility>
 
 #define YES "yes"
 #define NO "no"
@@ -26,8 +36,6 @@ class DecisionTree {
     bool ask(std::vector<std::string> v) const;
 
   private:
-
-
     class TreeNode {
       public:
         enum Type {
@@ -54,10 +62,11 @@ class DecisionTree {
         const int value;
         std::unordered_map<std::string, TreeNode*> children;
     };
+
     friend TreeNode;
     TreeNode * root;
     // key - info_gain, value - category id in categories vector
-    std::multimap<float, int> categories_ids;
+    std::multimap<float, std::pair<int, int>> categories_ids;
     std::mutex multimap_mut;
 
     void calculate_info_gain(const DataTable & dt);

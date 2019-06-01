@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <cctype>
 #include <cmath>
-#include <utility>
 #include <string>
 
 #define THREADS 4
@@ -63,7 +62,7 @@ bool DecisionTree::is_number(const std::string& s)
 
 bool DecisionTree::is_positive(std::string s){
   if (is_number(s)) {
-    return s != "0";
+    return s == "1";
   }
   std::transform(s.begin(), s.end(), s.begin(), ::tolower);
   return s == "yes" || s == "true";
@@ -129,6 +128,7 @@ void DecisionTree::column_calculation(double set_ent, double n_pos_rows, int p, 
           partition[dt[i][p]] = std::make_pair(positive, positive);
       }
     }
+    int max_bi = 0;
     else {
         std::vector<std::pair<int, bool>> nums(dt.get_len() - 1);
         for (unsigned i = 1; i < dt.get_len(); ++i)
@@ -139,7 +139,6 @@ void DecisionTree::column_calculation(double set_ent, double n_pos_rows, int p, 
         auto balance = [] (int lp, int ln, int rp, int rn) -> int { return std::abs(lp-ln) + std::abs(rp-rn); };
         int l_pos = 0, l_neg = 0, r_pos = n_pos_rows, r_neg = nums.size() - n_pos_rows;
         int max_balance = 0;
-        int max_bi = 0;
         bool positive_rightside = false;
         for (unsigned i = 0; i < nums.size(); ++i) {
           if (nums[i].second) {
@@ -169,7 +168,7 @@ void DecisionTree::column_calculation(double set_ent, double n_pos_rows, int p, 
       entropy += c * (p.second.second + p.second.first) / dt.get_len();
     }
     multimap_mut.lock();
-    categories_ids.insert(std::make_pair(set_ent - entropy, p));
+    categories_ids.insert(std::make_pair(set_ent - entropy, std::make_pair(p, max_bi)));
     multimap_mut.unlock();
     ++p;
   }
