@@ -22,6 +22,7 @@ void DataTable::txt_save(const std::string & filename) const {
 }
 
 void DataTable::txt_load(const std::string & filename) {
+  delete data;
   std::fstream file;
   file.open(filename, std::ios::in);
   if (!file.is_open())

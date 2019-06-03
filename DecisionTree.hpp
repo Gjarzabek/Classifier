@@ -38,36 +38,35 @@ class DecisionTree {
   private:
     class TreeNode {
       public:
-        enum Type {
-          CONDITION,
-          CATEGORY
-        };
 
-        TreeNode() = delete;
+        TreeNode(): cat_id(0), value("");
         TreeNode(const TreeNode & x) = delete;
-        TreeNode(int c_id, std::string nm) : cat_id(c_id), node_type(CATEGORY), name(nm), value(0) {}
-        TreeNode(int c_id, int w) : cat_id(c_id), node_type(CONDITION), name(""),value(w) {}
+        TreeNode(int c_id, std::string nm) : cat_id(c_id), value(nm) {}
+
+        void set(const int & ci, const std::string & n) {
+          cat_id = ci;
+          name = n;
+        }
 
         const auto & get_children() const;
-        int get_value() const;
-        std::string get_name() const;
-        void add_edge(const std::string & s, TreeNode * child);
+        std::string get_value() const;
+        template <typename T>
+        void add_edge(const std::string & edge, int id, std::string node_val);
         template <typename T>
         auto choose_edge(T choice_val);
 
       private:
-        const int cat_id;
-        const Type node_type;
-        const std::string name;
-        const int value;
+        int cat_id;
+        std::string value;
+        // nazwy typow kategorii
+        // np dla pogoda
+        // nazwy moga byc: slonecznie, pochmurno, deszczowo itd..
         std::unordered_map<std::string, TreeNode*> children;
     };
 
     friend TreeNode;
     TreeNode * root;
     // key - info_gain, value - category id in categories vector
-    std::multimap<float, std::pair<int, int>> categories_ids;
-    std::mutex multimap_mut;
 
     void calculate_info_gain(const DataTable & dt);
     void delete_tree();
@@ -75,7 +74,7 @@ class DecisionTree {
     static double set_entropy(int x, int y);
     static bool is_positive(std::string s);
     static bool is_number(const std::string & s);
-
+    static void walk(const DataTable & dt, TreeNode * root, std::list<int> indiecies);
 
 };
 
