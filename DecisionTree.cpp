@@ -1,4 +1,4 @@
-YES#include "DecisionTree.hpp"
+#include "DecisionTree.hpp"
 #include <thread>
 #include <algorithm>
 #include <cctype>
@@ -13,18 +13,8 @@ const auto & DecisionTree::TreeNode::get_children() const {
 }
 
 
-int DecisionTree::TreeNode::get_value() const {
-  if (node_type == CONDITION) {
+std::string DecisionTree::TreeNode::get_value() const {
     return value;
-  }
-  else return -1;
-}
-
-
-std::string DecisionTree::TreeNode::get_name() const {
-  if (node_type == CATEGORY)
-    return name;
-  else return "";
 }
 
 
@@ -35,14 +25,15 @@ DecisionTree::TreeNode * DecisionTree::TreeNode::add_edge(const std::string & s)
 }
 
 
-auto DecisionTree::TreeNode::choose_edge(std::string choice_val) {
+DecisionTree::TreeNode * DecisionTree::TreeNode::choose_edge(std::string choice_val) {
   if (!is_number(choice_val))
     return children[choice_val];
-  else {
-    int chv = std::stoi(choice_val)
-    bool greater = chv > value;
+  else if (is_number(value)){
+    int chv = std::stoi(choice_val);
+    bool greater = chv > std::stoi(value);
     return greater ? children[YES] : children[NO];
   }
+  else return nullptr;
 }
 
 
@@ -70,18 +61,16 @@ double DecisionTree::set_entropy(int pn, int c_len) {
 // oblicza najlepszego kandydata sposrod kategorii S na kolejny wezel
 // zwraca jej [indeks, nazwe]
 void DecisionTree::calculate_info_gain(const DataTable & dt, const auto & col_id, const auto & row_id, auto & result) {
-  categories_ids.clear();
   if (dt.get_len() < 1) {
     return;
   }
-  unsigned line_len = (dt[0]).size();
-  unsigned col_len = s.size();
+  unsigned line_len = col_id.size();
+  unsigned col_len = row_id.size();
   unsigned positive_num = 0;
-  for (int j: s) {
+  for (int j: row_id) {
     if (is_positive(dt[j][line_len - 1]))
       ++positive_num;
   }
-  // is leaf
   if (positive_num == col_len) {
     result.first = -1;
     result.second = YES;
@@ -92,6 +81,7 @@ void DecisionTree::calculate_info_gain(const DataTable & dt, const auto & col_id
     result.second = NO;
     return;
   }
+  std::cout << "calculate_info_gain" << '\n';
   double set_i = set_entropy(positive_num, col_len-1);
   column_calculation(set_i, positive_num, col_id, row_id, dt, result);
 }
@@ -99,7 +89,7 @@ void DecisionTree::calculate_info_gain(const DataTable & dt, const auto & col_id
 //chosing best coulmn
 void DecisionTree::column_calculation(double set_ent, double n_pos_rows, const auto & col_id, const auto & row_id, const DataTable & dt, auto & result) {
   int best_i_gain = 0;
-  string cat_name = "";
+  std::string cat_name;
   int best_id = 0;
   for(int p: col_id) {
     // ta haszmapa przydalaby sie do obliczania krawedzi
@@ -155,12 +145,11 @@ void DecisionTree::column_calculation(double set_ent, double n_pos_rows, const a
       // else musze sprawdzic kolejna kategorie
       entropy += c * (el.second.second + el.second.first) / dt.get_len();
     }
-    make_pair(set_ent - entropy, std::make_pair(p, max_bi)));
     int i_gain = set_ent - entropy;
     if (i_gain > best_i_gain) {
       best_i_gain = i_gain;
       best_id = p;
-      cat_name = comparsion_node ? partition.begin()->first : partition[0][p];
+      cat_name = comparsion_node ? partition.begin()->first : dt[0][p];
     }
   }
   result.first = best_id;
@@ -170,16 +159,17 @@ void DecisionTree::column_calculation(double set_ent, double n_pos_rows, const a
 //recursive creation
 void DecisionTree::walk(const DataTable & dt, auto * root, auto col_id, auto row_id) {
   if (root) {
-    std::pair<int, std::string> result(-1, "");
+    std::pair<int, std::string> result;
+    result.first = -1;
     calculate_info_gain(dt, col_id, row_id, result);
-    if (indieces.first < 0) {
-      root->set(-1, indieces.second);
+    if (result.first < 0) {
+      root->set(-1, result.second);
     }
     else {
-      root->set(result.frist, result.second);
+      root->set(result.first, result.second);
       col_id.remove(result.first);
       std::unordered_map<std::string, std::list<int>> used;
-      for (unsigned i = 1; i < dt.get_len(); ++i) {
+      for (int i = 1; (unsigned)i < dt.get_len(); ++i) {
         if (used.find(dt[i][result.first]) == used.end()) {
           used[dt[i][result.first]] = {i};
         }
@@ -199,10 +189,29 @@ void DecisionTree::walk(const DataTable & dt, auto * root, auto col_id, auto row
 // linked lista z dostepnymi indeksami kategorii
 void DecisionTree::build(const DataTable & dt) {
   std::list<int> col_indieces, row_indiecies;
-  for (unsigned i = 0; i < dt.get_len() - 1; ++i)
-    row_indiecies.push_back(i);
+  for (unsigned i = 1; i < dt.get_len(); ++i)
+    row_indiecies.push_back(i)  ;
   for (unsigned i = 0; i < dt[0].size() - 1; ++i) {
     col_indieces.push_back(i);
   }
   walk(dt, root, col_indieces, row_indiecies);
+}
+
+void DecisionTree::print_walk(TreeNode * node, int indenation) {
+  if (node) {
+    for (int i = 0; i < indenation; ++i)
+      std::cout << "  ";
+    std::cout << ":";
+    is_number(node->value) ? std::cout<<node->value<<">\n" : std::cout << node->value << '\n';
+    for (auto ch: node->get_children()) {
+        for (int i = 0; i < indenation; ++i)
+          std::cout << ' ';
+        std::cout << ch.first << '\n';
+        print_walk(ch.second, indenation + 1);
+    }
+  }
+}
+
+void DecisionTree::print() const {
+  print_walk(root, 0);
 }

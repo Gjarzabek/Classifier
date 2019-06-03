@@ -15,8 +15,8 @@ class DataTable {
       delete data;
     }
     void txt_load(const std::string & filename);
-    /* return true if saved succeded*/
     void txt_save(const std::string & table) const;
+    void print() const;
     unsigned get_len() const {
       return data->size();
     }

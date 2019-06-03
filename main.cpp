@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include "DecisionTree.hpp"
 #include "Classifier.hpp"
 #include "DataTable.hpp"
 
@@ -20,6 +21,9 @@ int main(int argc, char const *argv[]) {
   cout << "Hello!\n";
   DataTable a;
   a.txt_load("data.txt");
-  //cout << a;
+  a.print();
+  DecisionTree b;
+  b.build(a);
+  b.print();
   return 0;
 }

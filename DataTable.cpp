@@ -7,6 +7,26 @@ const std::vector<std::string> & DataTable::operator[] (unsigned index) const{
 }
 
 
+void DataTable::print() const {
+  unsigned len = (data)->size();
+  for (unsigned i = 0 ; i < len; ++i) {
+    std::cout<< "---";
+  }
+  std::cout<< '\n';
+
+  for (auto line: *(data)) {
+    for (auto i = line.begin(); i != line.end(); ++i)
+      std::cout<< *i << "  ";
+    std::cout<< "\n";
+  }
+
+  for (unsigned i = 0 ; i < len; ++i) {
+    std::cout<< "---";
+  }
+  std::cout<< '\n';
+}
+
+
 void DataTable::txt_save(const std::string & filename) const {
   std::fstream file;
   file.open(filename, std::ios::out);
@@ -22,7 +42,6 @@ void DataTable::txt_save(const std::string & filename) const {
 }
 
 void DataTable::txt_load(const std::string & filename) {
-  delete data;
   std::fstream file;
   file.open(filename, std::ios::in);
   if (!file.is_open())
