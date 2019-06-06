@@ -2,9 +2,10 @@
 #include <thread>
 #include <algorithm>
 #include <cctype>
-#include <cmath>
+#include <math.h>
 #include <string>
 #include <list>
+#include <exception>
 
 #define THREADS 4
 
@@ -38,6 +39,8 @@ DecisionTree::TreeNode * DecisionTree::TreeNode::choose_edge(std::string choice_
 
 
 bool DecisionTree::is_number(const std::string& s) {
+    if (s.empty())
+      return false;
     std::string::const_iterator it = s.begin();
     while (it != s.end() && std::isdigit(*it)) ++it;
     return !s.empty() && it == s.end();
@@ -45,7 +48,9 @@ bool DecisionTree::is_number(const std::string& s) {
 
 
 bool DecisionTree::is_positive(std::string s) {
-  if (is_number(s)) {
+  if (s.empty())
+    return false;
+  else if (is_number(s)) {
     return s == "1";
   }
   std::transform(s.begin(), s.end(), s.begin(), ::tolower);
@@ -53,62 +58,66 @@ bool DecisionTree::is_positive(std::string s) {
 }
 
 
-double DecisionTree::set_entropy(int pn, int c_len) {
-  double result = -((double)(pn/c_len) * log(pn/c_len) + ((c_len-pn)/c_len) * log((c_len-pn)/c_len));
+double DecisionTree::set_entropy(int positive_num, int row_num) {
+  double result=0;
+  double x = positive_num / row_num;
+  double y = (positive_num - row_num) / row_num;
+  result = -(x * log10(x) + y * log10(y));
   return result;
 }
 
 // oblicza najlepszego kandydata sposrod kategorii S na kolejny wezel
 // zwraca jej [indeks, nazwe]
-void DecisionTree::calculate_info_gain(const DataTable & dt, const auto & col_id, const auto & row_id, auto & result) {
+void DecisionTree::calculate_info_gain(const DataTable & dt, const std::list<int> & col_id, const std::list<int> & row_id, std::pair<int, std::string> & result) {
   if (dt.get_len() < 1) {
     return;
   }
   unsigned line_len = col_id.size();
-  unsigned col_len = row_id.size();
+  unsigned row_num = row_id.size();
   unsigned positive_num = 0;
   for (int j: row_id) {
-    if (is_positive(dt[j][line_len - 1]))
+    if (is_positive((dt[j])[line_len])) {
       ++positive_num;
+    }
   }
-  if (positive_num == col_len) {
+  if (positive_num == row_num) {
     result.first = -1;
     result.second = YES;
-    return;
   }
   else if (positive_num == 0) {
     result.first = -1;
     result.second = NO;
-    return;
   }
-  std::cout << "calculate_info_gain" << '\n';
-  double set_i = set_entropy(positive_num, col_len-1);
-  column_calculation(set_i, positive_num, col_id, row_id, dt, result);
+  else {
+    double set_i = set_entropy(positive_num, row_num);
+    std::cout<<"set_i = " << set_i << "\n";
+    column_calculation(set_i, positive_num, col_id, row_id, dt, result);
+  }
 }
 
 //chosing best coulmn
-void DecisionTree::column_calculation(double set_ent, double n_pos_rows, const auto & col_id, const auto & row_id, const DataTable & dt, auto & result) {
+void DecisionTree::column_calculation(double set_ent, double n_pos_rows, const std::list<int> & col_id, const std::list<int> & row_id, const DataTable & dt, std::pair<int, std::string> & result) {
   int best_i_gain = 0;
   std::string cat_name;
   int best_id = 0;
   for(int p: col_id) {
-    // ta haszmapa przydalaby sie do obliczania krawedzi
-    std::unordered_map<std::string, std::pair<int, int>> partition(dt.get_len()); // categorie name + pair<pozytywne przypadki, negatyw>
+    std::unordered_map<std::string, std::pair<int, int>> partition; // categorie name + pair<pozytywne przypadki, negatyw>
     int max_bi = 0;
     bool comparsion_node = is_number(dt[1][p]);
     if (!comparsion_node) {
       for (int i: row_id) {
-        bool positive = is_positive(dt[i][dt.get_len() - 1]);
-        if (partition.find(dt[i][p]) != partition.end())
-          positive ? partition[dt[i][p]].first += 1 : partition[dt[i][p]].second += 1;
+        const auto & curr_row = dt[i];
+        bool positive = is_positive(curr_row[curr_row.size() - 1]);
+        if (partition.find((dt[i])[p]) != partition.end())
+          positive ? partition[(dt[i])[p]].first += 1 : partition[(dt[i])[p]].second += 1;
         else
-          partition[dt[i][p]] = std::make_pair(positive, positive);
+          partition[(dt[i])[p]] = std::make_pair(positive, positive);
       }
     }
     else {
-        std::vector<std::pair<int, bool>> nums(dt.get_len() - 1);
+        std::vector<std::pair<int, bool>> nums;
         for (unsigned i = 1; i < dt.get_len(); ++i)
-          nums[i] = std::make_pair(std::stoi(dt[i][p]), is_positive(dt[i][p]));
+          nums.push_back(std::make_pair(std::stoi((dt[i])[p]), is_positive((dt[i])[p])));
         std::sort(nums.begin(), nums.end(), [](const std::pair<int, bool> & a, const std::pair<int, bool> & b) -> bool {
             return a.first < b.first;
         });
@@ -141,8 +150,6 @@ void DecisionTree::column_calculation(double set_ent, double n_pos_rows, const a
     double entropy = 0;
     for(auto el: partition) {
       double c = set_entropy(el.second.first, el.second.second + el.second.first);
-      // jesli c 1 lub 0 to znaczy ze ma gotowego liscia z odpowiedzia tak lub nie
-      // else musze sprawdzic kolejna kategorie
       entropy += c * (el.second.second + el.second.first) / dt.get_len();
     }
     int i_gain = set_ent - entropy;
@@ -154,15 +161,17 @@ void DecisionTree::column_calculation(double set_ent, double n_pos_rows, const a
   }
   result.first = best_id;
   result.second = cat_name;
+  ;
 }
 
 //recursive creation
-void DecisionTree::walk(const DataTable & dt, auto * root, auto col_id, auto row_id) {
+void DecisionTree::walk(const DataTable & dt, DecisionTree::TreeNode * root, std::list<int> col_id, std::list<int> row_id) {
   if (root) {
     std::pair<int, std::string> result;
     result.first = -1;
     calculate_info_gain(dt, col_id, row_id, result);
-    if (result.first < 0) {
+    std::cout << "Wezel: " << result.second << std::endl;
+    if (result.first < 0 || result.second.empty()) {
       root->set(-1, result.second);
     }
     else {
@@ -170,11 +179,11 @@ void DecisionTree::walk(const DataTable & dt, auto * root, auto col_id, auto row
       col_id.remove(result.first);
       std::unordered_map<std::string, std::list<int>> used;
       for (int i = 1; (unsigned)i < dt.get_len(); ++i) {
-        if (used.find(dt[i][result.first]) == used.end()) {
-          used[dt[i][result.first]] = {i};
+        if (used.find((dt[i])[result.first]) == used.end()) {
+          used[(dt[i])[result.first]] = {i};
         }
         else {
-          used[dt[i][result.first]].push_back(i);
+          used[(dt[i])[result.first]].push_back(i);
         }
       }
       for (auto p: used) {

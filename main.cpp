@@ -17,7 +17,7 @@ using namespace std;
 //Klasyfikator na podstawie przekazanych danych sporzadza odpowiednie drzewo decyzycjne
 //Ktore nastepnie wykorzystuje do klasyfikacji danych.
 
-int main(int argc, char const *argv[]) {
+int main() {
   cout << "Hello!\n";
   DataTable a;
   a.txt_load("data.txt");
@@ -25,5 +25,6 @@ int main(int argc, char const *argv[]) {
   DecisionTree b;
   b.build(a);
   b.print();
+  
   return 0;
 }

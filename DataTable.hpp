@@ -21,7 +21,8 @@ class DataTable {
       return data->size();
     }
     friend std::ostream& operator<<(std::ostream& os, const DataTable & dt);
-    const std::vector<std::string> & operator[] (unsigned) const;
+    const std::vector<std::string> & operator[] (int x) const;
+    
 
   private:
     std::vector<std::vector<std::string>> * data;

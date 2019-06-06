@@ -1,6 +1,6 @@
 CC = g++
-CFLAGS = -Wall -fexceptions -c -std=c++14 -pthread
-LDFLAGS = -Wall -fexceptions -std=c++14 -pthread
+CFLAGS = -Wall -Wextra -Wpedantic -g -fexceptions -c -std=c++14 -pthread
+LDFLAGS = -Wall -Wextra -Wpedantic -g -fexceptions -std=c++14 -pthread
 
 app: DataTable.o Classifier.o DecisionTree.o main.o
 	$(CC) $(LDFLAGS) main.o DecisionTree.o Classifier.o DataTable.o -o app

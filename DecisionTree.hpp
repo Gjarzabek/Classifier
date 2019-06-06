@@ -61,12 +61,12 @@ class DecisionTree {
 
     void delete_tree();
     static void print_walk(TreeNode * root, int indenation);
-    static void calculate_info_gain(const DataTable & dt, const auto & col_id, const auto & row_id, auto & result);
-    static void column_calculation(double set_ent, double n_pos_rows, const auto & col_id, const auto & row_id, const DataTable & dt, auto & result);
+    static void calculate_info_gain(const DataTable & dt, const std::list<int> & col_id, const std::list<int> & row_id, std::pair<int, std::string> & result);
+    static void column_calculation(double set_ent, double n_pos_rows, const std::list<int> & col_id, const std::list<int> & row_id, const DataTable & dt, std::pair<int, std::string> & result);
     static double set_entropy(int x, int y);
     static bool is_positive(std::string s);
     static bool is_number(const std::string & s);
-    static void walk(const DataTable & dt, auto * root, auto col_id, auto row_id);
+    static void walk(const DataTable & dt, DecisionTree::TreeNode * root, std::list<int> col_id, std::list<int> row_id);
 
   public:
 

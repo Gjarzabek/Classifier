@@ -1,7 +1,7 @@
 #include "DataTable.hpp"
 #include <assert.h>
 
-const std::vector<std::string> & DataTable::operator[] (unsigned index) const{
+const std::vector<std::string> & DataTable::operator[] (int index) const{
   assert(data->size() > index);
   return (*data)[index];
 }
