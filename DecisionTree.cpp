@@ -60,8 +60,8 @@ bool DecisionTree::is_positive(std::string s) {
 
 double DecisionTree::set_entropy(int positive_num, int row_num) {
   double result=0;
-  double x = positive_num / row_num;
-  double y = (positive_num - row_num) / row_num;
+  double x = abs(positive_num / row_num);
+  double y = abs((positive_num - row_num) / row_num);
   result = -(x * log10(x) + y * log10(y));
   return result;
 }
