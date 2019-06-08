@@ -7,14 +7,6 @@
   and construct decisiontree associated with it.
 */
 
-/*
-  Todo:
-    *napisać funkcje budującą drzewo
-    *napisać funkcje nizszącą drzewo
-    *napisać Klase Classifier która uzywa DataTable i DecisionTree
-    *
-*/
-
 
 #include "DataTable.hpp"
 #include <map>
@@ -58,10 +50,9 @@ class DecisionTree {
     };
 
     friend TreeNode;
-    TreeNode * root;
-    // key - info_gain, value - category id in categories vector
 
-    void delete_tree();
+    TreeNode * root;
+    void delete_tree(TreeNode * root);
     static void print_walk(const DataTable & dt, TreeNode * node, int indenation);
     static void calculate_info_gain(const DataTable & dt, const std::list<int> & col_id, const std::list<int> & row_id, std::pair<int, std::string> & result);
     static void column_calculation(double set_ent, double n_pos_rows, const std::list<int> & col_id, const std::list<int> & row_id, const DataTable & dt, std::pair<int, std::string> & result);
@@ -75,7 +66,7 @@ class DecisionTree {
 
     DecisionTree() :root(new TreeNode()) {}
     ~DecisionTree() {
-      //delete_tree();
+      delete_tree(root);
     }
     void build(const DataTable & dt);
     bool ask(std::vector<std::string> v) const;

@@ -8,6 +8,7 @@
 #include <exception>
 
 #define THREADS 4
+#define MISS 0.96
 
 const std::unordered_map<std::string, DecisionTree::TreeNode*> & DecisionTree::TreeNode::get_children() const {
   return children;
@@ -61,7 +62,6 @@ bool DecisionTree::is_positive(std::string s) {
 double DecisionTree::set_entropy(double positive_num, double row_num) {
   if (positive_num == row_num || positive_num == 0)
     return 0;
-  double result=0;
   double x = static_cast<double>(positive_num / row_num);
   double y = static_cast<double>((positive_num - row_num) / row_num);
   x = std::abs(x);
@@ -69,7 +69,7 @@ double DecisionTree::set_entropy(double positive_num, double row_num) {
   if (x == 0 || y == 0) {
     return 0;
   }
-  result = -(x * log10(std::abs(x)) + y * log10(std::abs(y)));
+  double result = -(x * log10(std::abs(x)) + y * log10(std::abs(y)));
   return result;
 }
 
@@ -77,6 +77,8 @@ double DecisionTree::set_entropy(double positive_num, double row_num) {
 // zwraca jej [indeks, nazwe]
 void DecisionTree::calculate_info_gain(const DataTable & dt, const std::list<int> & col_id, const std::list<int> & row_id, std::pair<int, std::string> & result) {
   if (dt.get_len() < 1) {
+    result.first = -1;
+    result.second = "ERROR: empty container dt/row_id";
     return;
   }
   unsigned positive_num = 0;
@@ -85,11 +87,13 @@ void DecisionTree::calculate_info_gain(const DataTable & dt, const std::list<int
       ++positive_num;
     }
   }
-  if (positive_num == row_id.size()) {
+  double pos = static_cast<double>(positive_num) / row_id.size();
+  double neg = static_cast<double>(row_id.size() - positive_num) / (double)row_id.size();
+  if (pos >=  MISS) {
     result.first = -1;
     result.second = YES;
   }
-  else if (positive_num == 0) {
+  else if (neg >= MISS) {
     result.first = -1;
     result.second = NO;
   }
@@ -124,7 +128,7 @@ std::pair<std::string, std::pair<int, int>> DecisionTree::balance(const DataTabl
       --r_neg;
     }
     int cb = lbalance(l_pos, l_neg, r_pos, r_neg);
-    if (cb > max_balance) {
+    if (cb >= max_balance) {
       max_balance = cb;
       max_balance_id = i;
       positive_rightside = r_pos > r_neg;
@@ -138,7 +142,6 @@ std::pair<std::string, std::pair<int, int>> DecisionTree::balance(const DataTabl
 
 //chosing best coulmn
 void DecisionTree::column_calculation(double set_ent, double n_pos_rows, const std::list<int> & col_id, const std::list<int> & row_id, const DataTable & dt, std::pair<int, std::string> & result)  {
-  // Czemu wybiera 85 jako pierwszy wezel
   double best_i_gain = 0;
   std::string cat_name;
   int best_id = 0;
@@ -177,9 +180,7 @@ void DecisionTree::column_calculation(double set_ent, double n_pos_rows, const s
 
 //recursive creation
 void DecisionTree::walk(const DataTable & dt, DecisionTree::TreeNode * root, std::list<int> col_id, std::list<int> row_id) {
-  if (root) {
-    //static int NUMB = 0;
-    //std::cout << NUMB << std::endl;
+  if (root && !row_id.empty()) {
     std::pair<int, std::string> result;
     result.first = -1;
     calculate_info_gain(dt, col_id, row_id, result);
@@ -191,7 +192,7 @@ void DecisionTree::walk(const DataTable & dt, DecisionTree::TreeNode * root, std
       col_id.remove(result.first);
       std::list<int> pos, neg;
       for (int i: row_id) {
-        if (std::stoi(result.second) >std::stoi(dt[i][result.first])) {
+        if (std::stoi(result.second) >= std::stoi(dt[i][result.first])) {
           pos.push_back(i);
         }
         else {
@@ -207,7 +208,7 @@ void DecisionTree::walk(const DataTable & dt, DecisionTree::TreeNode * root, std
       root->n_set(result.first, result.second);
       col_id.remove(result.first);
       std::unordered_map<std::string, std::list<int>> used;
-      for (int i = 1; (unsigned)i < dt.get_len(); ++i) {
+      for (int i : row_id) {
         if (used.find((dt[i])[result.first]) == used.end()) {
           used[(dt[i])[result.first]] = {i};
         }
@@ -223,6 +224,14 @@ void DecisionTree::walk(const DataTable & dt, DecisionTree::TreeNode * root, std
   }
 }
 
+void DecisionTree::delete_tree(DecisionTree::TreeNode * node) {
+  if (node) {
+    for (auto child: node->get_children()) {
+      delete_tree(child.second);
+    }
+    delete node;
+  }
+}
 
 // linked lista z dostepnymi indeksami kategorii
 void DecisionTree::build(const DataTable & dt) {
@@ -233,12 +242,7 @@ void DecisionTree::build(const DataTable & dt) {
   for (unsigned i = 0; i < dt[0].size() - 1; ++i) {
     col_indieces.push_back(i);
   }
-  try {
-    walk(dt, root, col_indieces, row_indiecies);
-  }
-  catch(std::exception e) {
-    std::cerr << "build(): " << e.what() << std::endl;
-  }
+  walk(dt, root, col_indieces, row_indiecies);
 }
 
 void DecisionTree::print_walk(const DataTable & dt, TreeNode * node, int indenation) {
@@ -246,15 +250,15 @@ void DecisionTree::print_walk(const DataTable & dt, TreeNode * node, int indenat
     for (int i = 0; i < indenation; ++i)
       std::cout << "\t";
     if (node->get_cat() < 0) {
-      std::cout<< "Leaf-> " << node->get_value() << ".\n";
+      std::cout<< "Answer: " << node->get_value() << ".\n";
     }
     else {
       std::cout << "Node-> ";
-      is_number(node->get_value()) ? std::cout<< dt[0][node->get_cat()]  << " " << node->get_value()<<" > x\n" : std::cout << node->get_value() << '\n';
+      is_number(node->get_value()) ? std::cout<< dt[0][node->get_cat()]  << " " << node->get_value()<<" >= x\n" : std::cout << node->get_value() << '\n';
       for (auto ch: node->get_children()) {
          for (int i = 0; i < indenation; ++i)
             std::cout << '\t';
-          std::cout << "  edge: "<< ch.first << '\n';
+          std::cout << "|-------- "<< ch.first << '\n';
           print_walk(dt, ch.second, indenation + 1);
       }
     }

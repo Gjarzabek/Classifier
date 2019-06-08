@@ -12,10 +12,16 @@ using namespace std;
 
 // Uczenie polega na przekazaniu Klasyfikatorowi tabeli danych wraz
 // z oczekiwanymi wynikami dla poszczegolnych obiektow w tabeli
-// kontener <obiekt, ocena>
 
 //Klasyfikator na podstawie przekazanych danych sporzadza odpowiednie drzewo decyzycjne
 //Ktore nastepnie wykorzystuje do klasyfikacji danych.
+
+/*
+  Todo:
+    *napisać Klase Classifier która uzywa DataTable i DecisionTree
+    *dodac atrybut Datatable do drzewa
+    *dodać swoja klasę exepction do trhowowania
+*/
 
 int main() {
   DataTable a;
