@@ -67,7 +67,8 @@ void DataTable::txt_load(const std::string & filename) {
           line.push_back(word);
           word.clear();
         }
-        data->push_back(line);
+        if (!(line.empty()))
+          data->push_back(line);
         line.clear();
         break;
       default:

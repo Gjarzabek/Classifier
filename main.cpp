@@ -18,13 +18,27 @@ using namespace std;
 //Ktore nastepnie wykorzystuje do klasyfikacji danych.
 
 int main() {
-  cout << "Hello!\n";
   DataTable a;
-  a.txt_load("data.txt");
-  a.print();
+  try {
+    a.txt_load("data.txt");
+  }
+  catch (std::string str) {
+    std::cerr << str << std::endl;
+    return 0;
+  }
   DecisionTree b;
+  DataTable a2;
+  DecisionTree b2;
+
   b.build(a);
-  b.print();
-  
+  b.print(a);
+    try {
+    a2.txt_load("data2.txt");
+  }
+  catch (std::string str) {
+    std::cerr << str << std::endl;
+  }
+  b2.build(a2);
+  b2.print(a2);
   return 0;
 }
