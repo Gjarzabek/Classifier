@@ -12,7 +12,8 @@ class DataTable {
   public:
     DataTable(): data(new std::vector<std::vector<std::string>>(0)) {}
     ~DataTable() {
-      delete data;
+      if (data)
+        delete data;
     }
     void txt_load(const std::string & filename);
     void txt_save(const std::string & table) const;

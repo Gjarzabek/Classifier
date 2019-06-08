@@ -1,23 +1,49 @@
 #ifndef CLASSIFIER_H
 #define CLASSIFIER_H
 
+#include "DecisionTree.hpp"
+#include "DataTable.hpp"
 
-// Klasyfikator-1R uczymy na przekazanej tabeli a potem wykorzystujemy do
-// poszczegolnych obiektow,
-// mozliwosc klasyfikowania pojedynczo lub całych tabel
+/** Tasks:
+ *  --help - print description
+ *  learn() - build tree from .txt
+ *  ask() - input .txt file with datatable ---> output .txt file with answers
+ *  show() - showup constructed tree
+ *  ask_single() - 
+ *  class detects wrong inputs and infrom about them
+ */
 
-// Uczenie polega na przekazaniu Klasyfikatorowi tabeli danych wraz
-// z oczekiwanymi wynikami dla poszczegolnych obiektow w tabeli
-// kontener <obiekt, ocena>
-
-//Klasyfikator na podstawie przekazanych danych sporzadz odpowiednie drzewo decyzycjne
-//Ktore nastepnie wykorzystuje do klasyfikacji danych.
-
-template <class T, class N>
 class Classifier {
-  public:
-    Classifier();
+  
+   public:
+  
+    Classifier(): dst_file(""), src_file(""), tree(nullptr) {}
+    Classifier(std::string src, std::string dst = "output.txt") : dst_file(dst), src_file(src), tree(nullptr) {}
+    ~Classifier() {
+      if (tree)
+        delete tree;
+    }
+
+    void show() const{
+      tree->print();
+    }
+
+    void learn(std::string filename = "") {
+      if (filename.empty())
+        filename = src_file;
+      tree = new DecisionTree(new DataTable(), filename);
+      tree->build();
+    }
+
+    bool get_answer(const std::vector<std::string> & tab) const {
+      return tree->answer(tab);
+    }  
+
   private:
+  
+    std::string dst_file;
+    std::string src_file;
+    DecisionTree * tree;
 
 };
 

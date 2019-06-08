@@ -21,30 +21,14 @@ using namespace std;
     *napisać Klase Classifier która uzywa DataTable i DecisionTree
     *dodac atrybut Datatable do drzewa
     *dodać swoja klasę exepction do trhowowania
+    *dodać wspolbieżne wyliczanie drzewa
 */
 
 int main() {
-  DataTable a;
-  try {
-    a.txt_load("data.txt");
-  }
-  catch (std::string str) {
-    std::cerr << str << std::endl;
-    return 0;
-  }
-  DecisionTree b;
-  DataTable a2;
-  DecisionTree b2;
-
-  b.build(a);
-  b.print(a);
-    try {
-    a2.txt_load("data2.txt");
-  }
-  catch (std::string str) {
-    std::cerr << str << std::endl;
-  }
-  b2.build(a2);
-  b2.print(a2);
+  
+  Classifier c("data.txt");
+  c.learn();
+  std::cout << c.get_answer({"rainy" , "71" , "91" , "TRUE"}) << std::endl;
+  std::cout << "Po odpowiedzi";
   return 0;
 }

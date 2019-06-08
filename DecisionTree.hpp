@@ -7,16 +7,14 @@
   and construct decisiontree associated with it.
 */
 
+// TODO: funkcja przyjmująca vector stringow i szukajaca w drzewie odpowiedzi
 
 #include "DataTable.hpp"
-#include <map>
-#include <mutex>
 #include <unordered_map>
 #include <list>
 #include <utility>
 
-#define YES "yes"
-#define NO "no"
+
 
 class DecisionTree {
   
@@ -51,26 +49,52 @@ class DecisionTree {
 
     friend TreeNode;
 
+    //DataTable from which tree is built
+    DataTable * dt_ptr;
+    DataTable dt;
     TreeNode * root;
+    
+    DecisionTree() = default;
+    DecisionTree(const DecisionTree & b) = default;
+    
     void delete_tree(TreeNode * root);
-    static void print_walk(const DataTable & dt, TreeNode * node, int indenation);
-    static void calculate_info_gain(const DataTable & dt, const std::list<int> & col_id, const std::list<int> & row_id, std::pair<int, std::string> & result);
-    static void column_calculation(double set_ent, double n_pos_rows, const std::list<int> & col_id, const std::list<int> & row_id, const DataTable & dt, std::pair<int, std::string> & result);
+    
+    void print_walk(TreeNode * node, int indenation) const;
+    
+    void calculate_info_gain(const std::list<int> & col_id, const std::list<int> & row_id, std::pair<int, std::string> & result);
+    
+    void column_calculation(double set_ent, double n_pos_rows, const std::list<int> & col_id, const std::list<int> & row_id, std::pair<int, std::string> & result);
+    
+    void walk(TreeNode * root, std::list<int> col_id, std::list<int> row_id);
+    
+    std::pair<std::string, std::pair<int, int>> balance(int col_id, std::list<int> rows, int positive_records);
+    
     static double set_entropy(double x, double y);
+    
     static bool is_positive(std::string s);
+    
     static bool is_number(const std::string & s);
-    static void walk(const DataTable & dt, TreeNode * root, std::list<int> col_id, std::list<int> row_id);
-    static std::pair<std::string, std::pair<int, int>> balance(const DataTable & dt, int col_id, std::list<int> rows, int positive_records);
+
+    static bool answer_walk(const std::vector<std::string> & v, int i, TreeNode * node);
   
   public:
 
-    DecisionTree() :root(new TreeNode()) {}
-    ~DecisionTree() {
-      delete_tree(root);
+    DecisionTree(DataTable * table, std::string fn) :dt_ptr(table), root(new TreeNode()) {
+      dt_ptr->txt_load(fn);
+      dt = *dt_ptr;
     }
-    void build(const DataTable & dt);
-    bool ask(std::vector<std::string> v) const;
-    void print(const DataTable & dt) const;
+    ~DecisionTree() {
+      if (dt_ptr)
+        delete dt_ptr;
+      if (root)
+        delete_tree(root);
+    }
+    void build();
+    bool answer(const std::vector<std::string> & v) const;
+    void print() const;
+    bool empty() const {
+      return root->get_children().size() == 0;
+    }
 
 };
 

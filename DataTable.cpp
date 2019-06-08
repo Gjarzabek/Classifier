@@ -78,4 +78,5 @@ void DataTable::txt_load(const std::string & filename) {
     ch = file.get();
   }
   file.close();
+  print();
 }
