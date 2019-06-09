@@ -7,8 +7,6 @@
   and construct decisiontree associated with it.
 */
 
-// TODO: funkcja przyjmująca vector stringow i szukajaca w drzewie odpowiedzi
-
 #include "DataTable.hpp"
 #include <unordered_map>
 #include <list>

@@ -22,21 +22,3 @@ DecisionTree.o: DecisionTree.cpp DecisionTree.hpp classifier_exception.hpp
 
 clean:
 	rm *.o *.gch classifier *out.txt
-
-#	CC = gcc
-#	CFLAGS = -Wall --pedantic -c
-#	LDFLAGS = -Wall --pedantic
-#
-#	OBJECTS = err.o # pliki naglowkowe
-#	ALL = signals cleanup ctrl-c child
-#
-#	all: $(ALL)
-#
-#	%.o : %.c %.h
-#		$(CC) $(CFLAGS) $< # co znaczy $< , $@, $^ ,*~
-#
-#	$(ALL) : % : %.o $(OBJECTS)
-#		$(CC) $(LDFLAGS) -o $@ $^
-#
-#	clean:
-#		rm -rf *.o $(ALL) *~

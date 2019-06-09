@@ -1,13 +1,19 @@
 #include "Classifier.hpp"
 
-void Classifier::txt_proc(std::string testfile, std::string outf/* = ""*/) {
+void Classifier::txt_proc(std::string testfile, std::string outf/* = "" */) {
     if (outf.empty()) {
         outf = testfile.substr(0,testfile.length() - 4) + POSTFIX;
     }
     std::pair<int, int> colrow_size;
     tree->get_exptected_size(colrow_size);
     DataTable test_data;
-    test_data.txt_load(testfile);
+    try {
+        test_data.txt_load(testfile);
+    }
+    catch(const std::exception& e) {
+        std::cerr << e.what() << "\n";
+        return;
+    }
     if (test_data[0].size() == colrow_size.first - 1) {
         test_data.add_record(0, "Answer: ");
     }
@@ -24,6 +30,12 @@ void Classifier::txt_proc(std::string testfile, std::string outf/* = ""*/) {
         }
         test_data.add_record(i, answer);
     }
-    test_data.txt_save(outf);
+    try {
+        test_data.txt_save(outf);
+    }
+    catch(const std::exception& e) {
+        std::cerr << e.what() << "\n";
+        return;
+    }
     std::cout << testfile + " result ---> " + outf << std::endl;
 }
