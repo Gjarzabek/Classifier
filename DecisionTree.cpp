@@ -10,6 +10,7 @@
 #define NO "no"
 #define MISS 0.96
 
+
 const std::unordered_map<std::string, DecisionTree::TreeNode*> & DecisionTree::TreeNode::get_children() const {
   return children;
 }
@@ -73,35 +74,38 @@ double DecisionTree::set_entropy(double positive_num, double row_num) {
   return result;
 }
 
-bool DecisionTree::answer_walk(const std::vector<std::string> & v, int i, TreeNode * node) {
+///TODO: porownywac odpowienide kategorie ! - indeksy
+bool DecisionTree::answer_walk(const std::vector<std::string> & v, TreeNode * node) {
   if (node) {
-    if (i >= v.size())
-      return false;
-    else if (node->get_cat() < 0) {
+    if (node->get_cat() < 0) {
       return is_positive(node->get_value());
     }
     else {
-      return answer_walk(v, i + 1, node->choose_edge(v[i]));
+      std::string next_cat = v[node->get_cat()];
+      auto sibilings = node->get_children();
+      if (!sibilings.empty() && !is_number(next_cat) && sibilings.find(next_cat) == sibilings.end())
+        throw Classfier_except("MISSING RECORD: " + next_cat);
+      return answer_walk(v, node->choose_edge(next_cat));
     }
   }
   return false;
 }
 
 bool DecisionTree::answer(const std::vector<std::string> & v) const {
-  return answer_walk(v, 0, root);
+  return answer_walk(v, root);
 }
 
 // oblicza najlepszego kandydata sposrod kategorii S na kolejny wezel
 // zwraca jej [indeks, nazwe]
 void DecisionTree::calculate_info_gain(const std::list<int> & col_id, const std::list<int> & row_id, std::pair<int, std::string> & result) {
-  if (dt.get_len() < 1) {
+  if ((*dt).get_len() < 1) {
     result.first = -1;
-    result.second = "ERROR: empty container dt/row_id";
+    result.second = "ERROR: empty container (*dt)/row_id";
     return;
   }
   unsigned positive_num = 0;
   for (int j: row_id) {
-    if (is_positive((dt[j])[dt[j].size() - 1])) {
+    if (is_positive(((*dt)[j])[(*dt)[j].size() - 1])) {
       ++positive_num;
     }
   }
@@ -126,7 +130,7 @@ void DecisionTree::calculate_info_gain(const std::list<int> & col_id, const std:
 std::pair<std::string, std::pair<int, int>> DecisionTree::balance(int col_id, std::list<int> rows, int positive_records) {
   std::vector<std::pair<int, bool>> records;
   for (int i: rows)
-    records.push_back(std::make_pair(std::stoi((dt[i])[col_id]), is_positive((dt[i])[dt[i].size() - 1])));
+    records.push_back(std::make_pair(std::stoi(((*dt)[i])[col_id]), is_positive(((*dt)[i])[(*dt)[i].size() - 1])));
   std::sort(records.begin(), records.end(), [](const std::pair<int, bool> & a, const std::pair<int, bool> & b) -> bool {
       return a.first < b.first;
   });
@@ -173,15 +177,15 @@ void DecisionTree::column_calculation(double set_ent, double n_pos_rows, const s
   int best_id = 0;
   for(int p: col_id) {
     std::unordered_map<std::string, std::pair<int, int>> partition; // categorie name + pair<pozytywne przypadki, negatyw>
-    bool comparsion_node = is_number(dt[1][p]);
+    bool comparsion_node = is_number((*dt)[1][p]);
     if (!comparsion_node) {
       for (int i: row_id)  {
-        const auto & curr_row = dt[i];
+        const auto & curr_row = (*dt)[i];
         bool positive = is_positive(curr_row[curr_row.size() - 1]);
-        if (partition.find((dt[i])[p]) != partition.end())
-          positive ? partition[(dt[i])[p]].first += 1 : partition[(dt[i])[p]].second += 1;
+        if (partition.find(((*dt)[i])[p]) != partition.end())
+          positive ? partition[((*dt)[i])[p]].first += 1 : partition[((*dt)[i])[p]].second += 1;
         else
-          partition[(dt[i])[p]] = std::make_pair(positive, !positive);
+          partition[((*dt)[i])[p]] = std::make_pair(positive, !positive);
       }
     }
     else {
@@ -191,13 +195,13 @@ void DecisionTree::column_calculation(double set_ent, double n_pos_rows, const s
     double entropy = 0;
     for(auto el: partition) {
       double c = set_entropy(el.second.first, el.second.second + el.second.first);
-      entropy += c * (el.second.second + el.second.first) / dt.get_len();
+      entropy += c * (el.second.second + el.second.first) / (*dt).get_len();
     }
     double i_gain = set_ent - entropy;
     if (i_gain > best_i_gain) {
       best_i_gain = i_gain;
       best_id = p;
-      cat_name = comparsion_node ? partition.begin()->first : dt[0][p];
+      cat_name = comparsion_node ? partition.begin()->first : (*dt)[0][p];
     }
   }
   result.first = best_id;
@@ -218,7 +222,7 @@ void DecisionTree::walk(DecisionTree::TreeNode * root, std::list<int> col_id, st
       col_id.remove(result.first);
       std::list<int> pos, neg;
       for (int i: row_id) {
-        if (std::stoi(result.second) >= std::stoi(dt[i][result.first])) {
+        if (std::stoi(result.second) >= std::stoi((*dt)[i][result.first])) {
           pos.push_back(i);
         }
         else {
@@ -235,11 +239,11 @@ void DecisionTree::walk(DecisionTree::TreeNode * root, std::list<int> col_id, st
       col_id.remove(result.first);
       std::unordered_map<std::string, std::list<int>> used;
       for (int i : row_id) {
-        if (used.find((dt[i])[result.first]) == used.end()) {
-          used[(dt[i])[result.first]] = {i};
+        if (used.find(((*dt)[i])[result.first]) == used.end()) {
+          used[((*dt)[i])[result.first]] = {i};
         }
         else {
-          used[(dt[i])[result.first]].push_back(i);
+          used[((*dt)[i])[result.first]].push_back(i);
         }
       }
       for (auto p: used) {
@@ -259,13 +263,12 @@ void DecisionTree::delete_tree(DecisionTree::TreeNode * node) {
   }
 }
 
-// linked lista z dostepnymi indeksami kategorii
 void DecisionTree::build() {
   std::list<int> row_indiecies;
-  for (unsigned i = 1; i < dt.get_len(); ++i)
+  for (unsigned i = 1; i < (*dt).get_len(); ++i)
     row_indiecies.push_back(i);
   std::list<int> col_indieces;
-  for (unsigned i = 0; i < dt[0].size() - 1; ++i) {
+  for (unsigned i = 0; i < (*dt)[0].size() - 1; ++i) {
     col_indieces.push_back(i);
   }
   walk(root, col_indieces, row_indiecies);
@@ -280,7 +283,7 @@ void DecisionTree::print_walk(TreeNode * node, int indenation) const{
     }
     else {
       std::cout << "Node-> ";
-      is_number(node->get_value()) ? std::cout<< dt[0][node->get_cat()]  << " " << node->get_value()<<" >= x\n" : std::cout << node->get_value() << '\n';
+      is_number(node->get_value()) ? std::cout<< (*dt)[0][node->get_cat()]  << " " << node->get_value()<<" >= x\n" : std::cout << node->get_value() << '\n';
       for (auto ch: node->get_children()) {
          for (int i = 0; i < indenation; ++i)
             std::cout << '\t';
@@ -293,9 +296,9 @@ void DecisionTree::print_walk(TreeNode * node, int indenation) const{
 
 void DecisionTree::print() const {
   if (empty()) {
-    std::cout << "Empty Tree.\n";
+    std::cout << "Tree empty.\n";
     return;
   }
-  std::cout << "\n#### DecisionTree ####\n";
+  std::cout << "#### DecisionTree ####\n";
   print_walk(root, 0);
 }

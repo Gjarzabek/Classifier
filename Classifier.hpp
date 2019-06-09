@@ -3,45 +3,51 @@
 
 #include "DecisionTree.hpp"
 #include "DataTable.hpp"
+#include <assert.h>
+#include "classifier_exception.hpp"
+#include <fstream>
+
+#define POSTFIX "_out.txt"
 
 /** Tasks:
  *  --help - print description
  *  learn() - build tree from .txt
  *  ask() - input .txt file with datatable ---> output .txt file with answers
  *  show() - showup constructed tree
- *  ask_single() - 
- *  class detects wrong inputs and infrom about them
  */
 
 class Classifier {
   
    public:
   
-    Classifier(): dst_file(""), src_file(""), tree(nullptr) {}
-    Classifier(std::string src, std::string dst = "output.txt") : dst_file(dst), src_file(src), tree(nullptr) {}
+    Classifier(std::string src) : src_file(src), tree(nullptr) {}
     ~Classifier() {
       if (tree)
         delete tree;
     }
 
-    void show() const{
-      tree->print();
+    void show() const {
+      if (tree == nullptr)
+        std::cout << "Tree empty.\n";
+      else
+        tree->print();
     }
 
-    void learn(std::string filename = "") {
-      if (filename.empty())
-        filename = src_file;
-      tree = new DecisionTree(new DataTable(), filename);
-      tree->build();
+    void learn() {
+      assert(!src_file.empty());
+      tree = new DecisionTree(src_file);
     }
 
     bool get_answer(const std::vector<std::string> & tab) const {
       return tree->answer(tab);
     }  
 
+    // klasyfikuje plik txt o nazwie inf, wyniki zapisuje w pliku o nazwie outf
+    void txt_proc(std::string testfile, std::string outf = "");
+
   private:
-  
-    std::string dst_file;
+
+    Classifier() = default;
     std::string src_file;
     DecisionTree * tree;
 

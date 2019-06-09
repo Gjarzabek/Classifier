@@ -50,8 +50,7 @@ class DecisionTree {
     friend TreeNode;
 
     //DataTable from which tree is built
-    DataTable * dt_ptr;
-    DataTable dt;
+    DataTable * dt;
     TreeNode * root;
     
     DecisionTree() = default;
@@ -75,17 +74,18 @@ class DecisionTree {
     
     static bool is_number(const std::string & s);
 
-    static bool answer_walk(const std::vector<std::string> & v, int i, TreeNode * node);
+    static bool answer_walk(const std::vector<std::string> & v, TreeNode * node);
   
   public:
 
-    DecisionTree(DataTable * table, std::string fn) :dt_ptr(table), root(new TreeNode()) {
-      dt_ptr->txt_load(fn);
-      dt = *dt_ptr;
+    DecisionTree(std::string fn) :root(new TreeNode()) {
+      dt = new DataTable();
+      dt->txt_load(fn);
+      build();
     }
     ~DecisionTree() {
-      if (dt_ptr)
-        delete dt_ptr;
+      if (dt)
+        delete dt;
       if (root)
         delete_tree(root);
     }
@@ -95,7 +95,10 @@ class DecisionTree {
     bool empty() const {
       return root->get_children().size() == 0;
     }
-
+    void get_exptected_size(std::pair<int, int> & colrow) {
+      colrow.second = dt->get_len();
+      colrow.first = (*dt)[0].size();
+    }
 };
 
 #endif

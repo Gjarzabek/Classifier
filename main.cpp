@@ -27,8 +27,8 @@ using namespace std;
 int main() {
   
   Classifier c("data.txt");
+  c.show();
   c.learn();
-  std::cout << c.get_answer({"rainy" , "71" , "91" , "TRUE"}) << std::endl;
-  std::cout << "Po odpowiedzi";
+  c.txt_proc("data2.txt");
   return 0;
 }

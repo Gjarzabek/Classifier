@@ -8,17 +8,17 @@ app: DataTable.o Classifier.o DecisionTree.o main.o
 main.o: main.cpp
 	$(CC) $(CFLAGS) main.cpp
 
-Classifier.o: Classifier.cpp Classifier.hpp
-	$(CC) $(CFLAGS) Classifier.cpp
+Classifier.o: Classifier.cpp Classifier.hpp classifier_exception.hpp
+	$(CC) $(CFLAGS) Classifier.cpp Classifier.hpp classifier_exception.hpp
 
-DataTable.o: DataTable.cpp DataTable.hpp
-	$(CC) $(CFLAGS) DataTable.cpp
+DataTable.o: DataTable.cpp DataTable.hpp classifier_exception.hpp
+	$(CC) $(CFLAGS) DataTable.cpp DataTable.hpp classifier_exception.hpp
 
-DecisionTree.o: DecisionTree.cpp DecisionTree.hpp
-	$(CC) $(CFLAGS) DecisionTree.cpp
+DecisionTree.o: DecisionTree.cpp DecisionTree.hpp classifier_exception.hpp
+	$(CC) $(CFLAGS) DecisionTree.cpp DecisionTree.hpp classifier_exception.hpp
 
 clean:
-	rm *.o app
+	rm *.o *.gch app
 
 #	CC = gcc
 #	CFLAGS = -Wall --pedantic -c
