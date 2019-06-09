@@ -32,9 +32,13 @@ void DataTable::txt_save(const std::string & filename) const {
   file.open(filename, std::ios::out);
   if (!file.is_open())
     throw Classfier_except("txt_save(): " + filename + ": open error");
-  for (auto line: *data) {
-    for (auto word: line) {
-      file << word << " ";
+  for (auto word: (*data)[0]) {
+    file << word << ' ';
+  }
+  file << '\n';
+  for (auto it = data->begin() + 1; it != data->end(); it++) {
+    for (auto word: *it) {
+      file << word << '\t';
     }
     file << '\n';
   }

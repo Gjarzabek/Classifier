@@ -40,6 +40,12 @@ void ClassfiyShell::input_parser(int argc, char const *argv[]) {
         C->show();
     files.pop_front();
     for (auto file: files) {
-        C->txt_proc(file);
+        try {
+            C->txt_proc(file);
+        }
+        catch(const std::exception& e) {
+            std::cerr << e.what() << "YOLO\n";
+            return;
+        }
     }
 }

@@ -282,12 +282,12 @@ void DecisionTree::print_walk(TreeNode * node, int indenation) const{
       std::cout<< "Answer: " << node->get_value() << ".\n";
     }
     else {
-      std::cout << "Node-> ";
+      std::cout << "Node <-- ";
       is_number(node->get_value()) ? std::cout<< (*dt)[0][node->get_cat()]  << " " << node->get_value()<<" >= x\n" : std::cout << node->get_value() << '\n';
       for (auto ch: node->get_children()) {
          for (int i = 0; i < indenation; ++i)
             std::cout << '\t';
-          std::cout << "|-------- "<< ch.first << '\n';
+          std::cout << "|~~~~~~~~ "<< ch.first << '\n';
           print_walk(ch.second, indenation + 1);
       }
     }
