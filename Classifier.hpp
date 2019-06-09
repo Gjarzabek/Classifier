@@ -38,10 +38,6 @@ class Classifier {
       tree = new DecisionTree(src_file);
     }
 
-    bool get_answer(const std::vector<std::string> & tab) const {
-      return tree->answer(tab);
-    }  
-
     // klasyfikuje plik txt o nazwie inf, wyniki zapisuje w pliku o nazwie outf
     void txt_proc(std::string testfile, std::string outf = "");
 

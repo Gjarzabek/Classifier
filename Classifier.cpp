@@ -26,7 +26,7 @@ void Classifier::txt_proc(std::string testfile, std::string outf/* = ""*/) {
             test_data.add_record(i, answer);
         }
         test_data.txt_save(outf);
-        std::cout << "Answer saved at: " + outf << std::endl;
+        std::cout << testfile + " answer ---> " + outf << std::endl;
     }
     catch(const std::exception & e)
     {
