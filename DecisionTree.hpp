@@ -47,7 +47,6 @@ class DecisionTree {
 
     friend TreeNode;
 
-    //DataTable from which tree is built
     DataTable * dt;
     TreeNode * root;
     

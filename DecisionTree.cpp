@@ -74,7 +74,6 @@ double DecisionTree::set_entropy(double positive_num, double row_num) {
   return result;
 }
 
-///TODO: porownywac odpowienide kategorie ! - indeksy
 bool DecisionTree::answer_walk(const std::vector<std::string> & v, TreeNode * node) {
   if (node) {
     if (node->get_cat() < 0) {
@@ -95,8 +94,7 @@ bool DecisionTree::answer(const std::vector<std::string> & v) const {
   return answer_walk(v, root);
 }
 
-// oblicza najlepszego kandydata sposrod kategorii S na kolejny wezel
-// zwraca jej [indeks, nazwe]
+
 void DecisionTree::calculate_info_gain(const std::list<int> & col_id, const std::list<int> & row_id, std::pair<int, std::string> & result) {
   if ((*dt).get_len() < 1) {
     result.first = -1;
@@ -125,8 +123,6 @@ void DecisionTree::calculate_info_gain(const std::list<int> & col_id, const std:
   }
 }
 
-
-// para inddeksu z najlepszym balancem i liczba przypadkow TRUE i FALSE
 std::pair<std::string, std::pair<int, int>> DecisionTree::balance(int col_id, std::list<int> rows, int positive_records) {
   std::vector<std::pair<int, bool>> records;
   for (int i: rows)
@@ -170,7 +166,6 @@ std::pair<std::string, std::pair<int, int>> DecisionTree::balance(int col_id, st
   return std::make_pair(result_record, std::make_pair(x, y));
 }
 
-//chosing best coulmn
 void DecisionTree::column_calculation(double set_ent, double n_pos_rows, const std::list<int> & col_id, const std::list<int> & row_id, std::pair<int, std::string> & result)  {
   double best_i_gain = 0;
   std::string cat_name;
@@ -191,7 +186,6 @@ void DecisionTree::column_calculation(double set_ent, double n_pos_rows, const s
     else {
         partition.insert(balance(p, row_id, n_pos_rows));
     }
-    // entropy calculation
     double entropy = 0;
     for(auto el: partition) {
       double c = set_entropy(el.second.first, el.second.second + el.second.first);
@@ -208,7 +202,6 @@ void DecisionTree::column_calculation(double set_ent, double n_pos_rows, const s
   result.second = cat_name;
 }
 
-//recursive creation
 void DecisionTree::walk(DecisionTree::TreeNode * root, std::list<int> col_id, std::list<int> row_id) {
   if (root && !row_id.empty()) {
     std::pair<int, std::string> result;
