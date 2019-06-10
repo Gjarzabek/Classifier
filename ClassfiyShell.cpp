@@ -7,7 +7,7 @@
 static const std::string TREEPRINT =  "--tree";
 
 void ClassfiyShell::print_help(std::string str) {
-    std::cout << "** Classifier 1.0 **\n";
+    std::cout << "** Classifier 1.1 **\n";
     if (!str.empty())
         std::cout << "not recognized: " << str << std::endl;
     std::cout << "usage:\n       ./classifier <src_file> <test_files>";
