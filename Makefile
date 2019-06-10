@@ -21,4 +21,4 @@ DecisionTree.o: DecisionTree.cpp DecisionTree.hpp classifier_exception.hpp
 	$(CC) $(CFLAGS) DecisionTree.cpp DecisionTree.hpp classifier_exception.hpp
 
 clean:
-	rm *.o *.gch classifier *out.txt
+	rm *.o *.gch classifier

@@ -33,25 +33,5 @@ class DataTable {
     std::vector<std::vector<std::string>> * data;
 
 };
-/**
-std::ostream& operator<<(std::ostream& os, const DataTable & dt) {
-  unsigned len = (dt.data)->end()->size();
-  for (unsigned i = 0 ; i < len; ++i) {
-    os << "---";
-  }
-  os << '\n';
-
-  for (auto line: *(dt.data)) {
-    for (auto i = line.begin(); i != line.end(); ++i)
-      os << *i << "  ";
-    os << "\n";
-  }
-
-  for (unsigned i = 0 ; i < len; ++i) {
-    os << "---";
-  }
-  os << '\n';
-  return os;
-}*/
 
 #endif
