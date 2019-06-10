@@ -31,10 +31,14 @@ void DataTable::txt_save(const std::string & filename) const {
   std::fstream file;
   file.open(filename, std::ios::out);
   if (!file.is_open())
-    throw "txt_save(): " + filename + ": open error";
-  for (auto line: *data) {
-    for (auto word: line) {
-      file << word << " ";
+    throw Classfier_except("error: cannot open " + filename);
+  for (auto word: (*data)[0]) {
+    file << word << ' ';
+  }
+  file << '\n';
+  for (auto it = data->begin() + 1; it != data->end(); it++) {
+    for (auto word: *it) {
+      file << word << '\t';
     }
     file << '\n';
   }
@@ -45,7 +49,7 @@ void DataTable::txt_load(const std::string & filename) {
   std::fstream file;
   file.open(filename, std::ios::in);
   if (!file.is_open())
-    throw "load_file(): " + filename + ": open error";
+    throw Classfier_except("error: cannot open " + filename);
   data->clear();
   bool in_word = false;
   std::vector<std::string> line;
@@ -67,7 +71,8 @@ void DataTable::txt_load(const std::string & filename) {
           line.push_back(word);
           word.clear();
         }
-        data->push_back(line);
+        if (!(line.empty()))
+          data->push_back(line);
         line.clear();
         break;
       default:
