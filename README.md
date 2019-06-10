@@ -2,7 +2,6 @@
 
 induction of the decision tree based on data from the table in the txt file
 
-/**************************
   Program zaliczeniowy nr3 - Indukcja drzewa decyzyjnego z tabeli danych, klasyfikacja za jego pomocą
   wersja: 1.1
   Data: 10.06.2019
@@ -24,5 +23,3 @@ induction of the decision tree based on data from the table in the txt file
   DataTable -     Odczyt i zapis tabeli danych z/do plików tekstowych, przechowywanie tabeli w pamięci RAM
   DecisionTree -  Tworzenie i indukcja drzewa decyzyjnego z danej DataTable
   Classifier -    Zarządzanie drzewem, przekazywanie informacji z ClassfiyShell
- 
- ********************************/
