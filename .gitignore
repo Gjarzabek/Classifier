@@ -1,6 +1,5 @@
 *.txt
 *.o
 *.gch
-app
 classifier
 .vscode/
