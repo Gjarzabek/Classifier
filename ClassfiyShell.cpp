@@ -5,13 +5,15 @@
 #include <memory>
 
 static const std::string TREEPRINT =  "--tree";
+static const std::string PROGRAM_CALL =  "./classifier";
 
 void ClassfiyShell::print_help(std::string str) {
-    std::cout << "** Classifier 1.1 **\n";
+    std::cout << "** Classifier 1.3 **\n";
     if (!str.empty())
         std::cout << "not recognized: " << str << std::endl;
     std::cout << "usage:\n       ./classifier <src_file> <test_files>";
-    std::cout << "\n       [--tree] -- prints built tree\n";
+    std::cout << "\n       flags:";    
+    std::cout << "\n             [--tree] -- prints built tree\n";
 }
 
 

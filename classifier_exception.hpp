@@ -12,6 +12,7 @@ class Classfier_except : public std::exception {
         std::string mess;
     public:
         Classfier_except() : mess(DEFAULT_MESS) {}
+        Classfier_except(const std::exception & e) : mess(e.what()) {}
         Classfier_except(const char * messege) :mess(messege) {}
         Classfier_except(std::string str): mess(str) {}
         virtual const char* what() const noexcept { 

@@ -77,8 +77,15 @@ class DecisionTree {
 
     DecisionTree(std::string fn) :root(new TreeNode()) {
       dt = new DataTable();
-      dt->txt_load(fn);
-      build();
+      try  {
+        dt->txt_load(fn);
+        build();
+      }
+      catch (const std::exception & e) {
+        delete dt;
+        delete root;
+        throw Classfier_except(e.what());
+      }
     }
     ~DecisionTree() {
       if (dt)

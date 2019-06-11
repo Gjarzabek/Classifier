@@ -35,7 +35,14 @@ class Classifier {
 
     void learn() {
       assert(!src_file.empty());
-      tree = new DecisionTree(src_file);
+      try {
+        tree = new DecisionTree(src_file);
+      }
+      catch (const std::exception & e) {
+        if (tree)
+          delete tree;
+        throw Classfier_except(e.what());
+      }
     }
 
     // klasyfikuje plik txt o nazwie inf, wyniki zapisuje w pliku o nazwie outf
