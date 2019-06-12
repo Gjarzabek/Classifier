@@ -29,7 +29,9 @@ DecisionTree::TreeNode * DecisionTree::TreeNode::add_edge(const std::string & s)
 
 
 DecisionTree::TreeNode * DecisionTree::TreeNode::choose_edge(std::string choice_val) {
-  if (!is_number(choice_val))
+  if (children.find(choice_val) == children.end())
+    return nullptr;
+  else if (!is_number(choice_val))
     return children[choice_val];
   else if (is_number(value)){
     int chv = std::stoi(choice_val);
